@@ -1,0 +1,102 @@
+:root {
+	--braille-chart-foreground: 0 0% 9%;
+	--braille-chart-muted: 0 0% 45.1%;
+	--braille-chart-border: 0 0% 89.8%;
+	--braille-chart-grid: 0 0% 72%;
+}
+
+.dark {
+	--braille-chart-foreground: 0 0% 98%;
+	--braille-chart-muted: 0 0% 63.9%;
+	--braille-chart-border: 0 0% 14.9%;
+	--braille-chart-grid: 0 0% 32%;
+}
+
+.braille-chart {
+	color: hsl(var(--braille-chart-foreground));
+	font-family:
+		"DejaVu Sans Mono", "Noto Sans Mono", SFMono-Regular, Menlo, Monaco,
+		Consolas, ui-monospace, monospace;
+	font-variant-numeric: tabular-nums;
+	line-height: 1;
+}
+
+.braille-chart__plot {
+	position: relative;
+	display: grid;
+	width: max-content;
+	max-width: 100%;
+	overflow: auto;
+	padding: 1.25lh 10ch 3lh 8ch;
+}
+
+.braille-chart__layer {
+	grid-area: 1 / 1;
+	margin: 0;
+	font: inherit;
+	line-height: 1;
+	letter-spacing: 0;
+	white-space: pre;
+	background: transparent;
+}
+
+.braille-chart__grid {
+	opacity: 0.7;
+}
+
+.braille-chart__axis {
+	position: relative;
+	z-index: 2;
+	grid-area: 1 / 1;
+	color: hsl(var(--braille-chart-muted));
+	font: inherit;
+	line-height: 1;
+	pointer-events: none;
+}
+
+.braille-chart__axis-label,
+.braille-chart__tick-label {
+	position: absolute;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.braille-chart__axis--y .braille-chart__tick-label {
+	width: 7ch;
+	text-align: right;
+}
+
+.braille-chart__axis--x .braille-chart__tick-label {
+	transform: translateX(-50%);
+}
+
+.braille-chart__axis--y .braille-chart__tick-label {
+	transform: translateY(-50%);
+}
+
+.braille-chart__legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	margin: 0.5rem 0 0;
+	padding: 0;
+	color: hsl(var(--braille-chart-muted));
+	font-size: 0.75rem;
+	list-style: none;
+}
+
+.braille-chart__legend-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.braille-chart__legend-marker {
+	color: hsl(var(--braille-chart-foreground));
+}
+
+.braille-chart__tooltip {
+	border: 1px solid hsl(var(--braille-chart-border));
+	padding: 0.5rem;
+	font-size: 0.75rem;
+}
