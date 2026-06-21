@@ -60,12 +60,7 @@ export function Example() {
 
 ## Examples
 
-See `examples/`:
-
-- `examples/function-chart.tsx`
-- `examples/line-chart.tsx`
-- `examples/bar-chart.tsx`
-- `examples/scatter-chart.tsx`
+See `examples/function-chart.tsx`.
 
 Run demo app:
 
