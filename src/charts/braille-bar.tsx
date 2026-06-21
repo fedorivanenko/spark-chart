@@ -1,42 +1,33 @@
 "use client";
 
+import type * as React from "react";
 import { gridToBraille } from "../core/braille";
 import { createGrid, drawVerticalBar } from "../core/raster";
 import type { ChartDatum } from "../core/types";
 import { cn } from "../lib/utils";
 import { useChartContext } from "./chart-context";
-import { type BasePlotProps, resolvePoints } from "./plot-utils";
+import { resolveSeries, resolveSeriesPoints } from "./plot-utils";
 
-export type BrailleBarProps<TDatum extends ChartDatum> =
-	BasePlotProps<TDatum> & {
-		barWidth?: number;
-	};
+export type BrailleBarProps = React.HTMLAttributes<HTMLPreElement> & {
+	series: string;
+	barWidth?: number;
+	color?: string;
+	label?: string;
+};
 
-export function BrailleBar<TDatum extends ChartDatum>({
+export function BrailleBar({
+	series: seriesId,
 	barWidth = 1,
-	data,
-	x,
-	y,
 	color,
-	includeZero = true,
 	label,
 	className,
 	style,
 	...props
-}: BrailleBarProps<TDatum>) {
-	const context = useChartContext<TDatum>();
-	const chartData = data ?? context.data;
+}: BrailleBarProps) {
+	const context = useChartContext<ChartDatum>();
+	const series = resolveSeries(context, seriesId);
 	const grid = createGrid(context.columns, context.rows);
-	const { baseline, points } = resolvePoints({
-		columns: context.columns,
-		data: chartData,
-		includeZero,
-		rows: context.rows,
-		x,
-		xDomain: context.xDomain,
-		y,
-		yDomain: context.yDomain,
-	});
+	const { baseline, points } = resolveSeriesPoints(context, seriesId);
 
 	for (const point of points) {
 		drawVerticalBar(grid, point.x, point.y, baseline, barWidth);
@@ -44,10 +35,14 @@ export function BrailleBar<TDatum extends ChartDatum>({
 
 	return (
 		<pre
-			aria-label={label}
+			aria-label={
+				label ??
+				series.ariaLabel ??
+				(typeof series.label === "string" ? series.label : series.id)
+			}
 			className={cn("braille-chart__layer", className)}
 			role="img"
-			style={{ color, ...style }}
+			style={{ color: color ?? series.color, ...style }}
 			{...props}
 		>
 			{gridToBraille(grid)}

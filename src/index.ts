@@ -24,8 +24,10 @@ export type { WorldFunction, WorldPoint, WorldPolyline } from "./core/shapes";
 export type {
 	Accessor,
 	BrailleResolution,
+	BrailleSeriesConfig,
 	ChartDatum,
 	ContinuousDomain,
+	DataKey,
 	DomainValue,
 	NumberAccessor,
 } from "./core/types";

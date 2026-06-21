@@ -22,21 +22,26 @@ export function ScatterChartExample() {
 	return (
 		<BrailleChart
 			data={sessions}
-			x="duration"
-			y="conversions"
+			xKey="duration"
 			resolution={{ columns: 44, rows: 10 }}
 			viewport={{ x: [0, 18], y: [0, 7] }}
+			series={[
+				{
+					id: "sessions",
+					dataKey: "conversions",
+					label: "Sessions",
+					color: "#2563eb",
+				},
+			]}
 		>
 			<BrailleGrid />
 			<BrailleScatter
-				color="#2563eb"
 				label="Session duration and conversions correlation"
-				x="duration"
-				y="conversions"
+				series="sessions"
 			/>
 			<BrailleAxis axis="x" label="Duration, minutes" />
 			<BrailleAxis axis="y" label="Conversions" />
-			<BrailleLegend items={[{ id: "sessions", label: "Sessions" }]} />
+			<BrailleLegend />
 		</BrailleChart>
 	);
 }

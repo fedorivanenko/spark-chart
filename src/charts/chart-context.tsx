@@ -3,12 +3,20 @@
 import * as React from "react";
 import type { Scale } from "../core/scale";
 import type { ChartTick } from "../core/ticks";
-import type { ChartDatum, ContinuousDomain, DomainValue } from "../core/types";
+import type {
+	BrailleSeriesConfig,
+	ChartDatum,
+	ContinuousDomain,
+	DataKey,
+	DomainValue,
+} from "../core/types";
 
 export type ChartContextValue<TDatum extends ChartDatum = ChartDatum> = {
 	data: TDatum[];
+	series: BrailleSeriesConfig<TDatum>[];
 	columns: number;
 	rows: number;
+	xKey?: DataKey<TDatum, DomainValue>;
 	xDomain?: DomainValue[] | ContinuousDomain;
 	yDomain?: ContinuousDomain;
 	xScale?: Scale;

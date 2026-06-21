@@ -20,19 +20,15 @@ export function BarChartExample() {
 			data={signups}
 			columns={36}
 			rows={10}
-			x="channel"
-			y="count"
+			xKey="channel"
 			includeZero
+			series={[{ id: "signups", dataKey: "count", label: "Signups" }]}
 		>
 			<BrailleGrid />
-			<BrailleBar
-				label="Signup count by acquisition channel"
-				x="channel"
-				y="count"
-			/>
+			<BrailleBar series="signups" />
 			<BrailleAxis axis="x" label="Channel" />
 			<BrailleAxis axis="y" label="Signups" />
-			<BrailleLegend items={[{ id: "signups", label: "Signups" }]} />
+			<BrailleLegend />
 		</BrailleChart>
 	);
 }

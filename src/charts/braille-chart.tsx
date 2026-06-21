@@ -1,7 +1,7 @@
 "use client";
 
 import type * as React from "react";
-import { readDomainValue } from "../core/accessors";
+import { readDomainValue, readNumber } from "../core/accessors";
 import {
 	categoryDomain,
 	continuousDomain,
@@ -12,55 +12,87 @@ import {
 import { linearScale, pointScale } from "../core/scale";
 import { categoryTicks, numericTicks } from "../core/ticks";
 import type {
-	Accessor,
+	BrailleResolution,
+	BrailleSeriesConfig,
 	ChartDatum,
 	ContinuousDomain,
+	DataKey,
 	DomainValue,
-	NumberAccessor,
 } from "../core/types";
 import { cn } from "../lib/utils";
-import { ChartProvider } from "./chart-context";
+import { type ChartContextValue, ChartProvider } from "./chart-context";
 
 export type BrailleViewport = {
 	x?: DomainValue[] | ContinuousDomain;
 	y?: ContinuousDomain;
 };
 
-export type BrailleResolution = {
-	columns: number;
-	rows: number;
-};
-
 export type BrailleChartProps<TDatum extends ChartDatum> =
 	React.HTMLAttributes<HTMLDivElement> & {
-		data: TDatum[];
+		data?: TDatum[];
+		series?: BrailleSeriesConfig<TDatum>[];
+		xKey?: DataKey<TDatum, DomainValue>;
 		columns?: number;
 		includeZero?: boolean;
 		resolution?: Partial<BrailleResolution>;
 		rows?: number;
 		viewport?: BrailleViewport;
-		x?: Accessor<TDatum, DomainValue>;
 		xDomain?: DomainValue[] | ContinuousDomain;
 		xTickCount?: number;
 		xTickPeriod?: number;
-		y?: NumberAccessor<TDatum>;
 		yDomain?: ContinuousDomain;
 		yTickCount?: number;
 		yTickPeriod?: number;
 	};
 
+function seriesData<TDatum extends ChartDatum>(
+	chartData: TDatum[],
+	series: BrailleSeriesConfig<TDatum>,
+): TDatum[] {
+	return series.data ?? chartData;
+}
+
+function collectXValues<TDatum extends ChartDatum>(
+	chartData: TDatum[],
+	series: BrailleSeriesConfig<TDatum>[],
+	xKey?: DataKey<TDatum, DomainValue>,
+): DomainValue[] {
+	return series.flatMap((item) => {
+		const resolvedXKey = item.xKey ?? xKey;
+
+		if (!resolvedXKey) {
+			return [];
+		}
+
+		return seriesData(chartData, item).map((datum, index) =>
+			readDomainValue(datum, resolvedXKey, index),
+		);
+	});
+}
+
+function collectYValues<TDatum extends ChartDatum>(
+	chartData: TDatum[],
+	series: BrailleSeriesConfig<TDatum>[],
+): number[] {
+	return series.flatMap((item) =>
+		seriesData(chartData, item).map((datum, index) =>
+			readNumber(datum, item.dataKey, index),
+		),
+	);
+}
+
 export function BrailleChart<TDatum extends ChartDatum>({
-	data,
+	data = [],
+	series = [],
+	xKey,
 	columns,
 	rows,
 	includeZero = false,
 	resolution,
 	viewport,
-	x,
 	xDomain,
 	xTickCount = 5,
 	xTickPeriod,
-	y,
 	yDomain,
 	yTickCount = 5,
 	yTickPeriod,
@@ -74,18 +106,30 @@ export function BrailleChart<TDatum extends ChartDatum>({
 	const explicitYDomain = viewport?.y ?? yDomain;
 	const dotWidth = Math.max(resolvedColumns * 2 - 1, 1);
 	const dotHeight = Math.max(resolvedRows * 4 - 1, 1);
-	const xValues = x
-		? data.map((datum, index) => readDomainValue(datum, x, index))
-		: [];
+	const xValues = collectXValues(data, series, xKey);
+	const yValues = collectYValues(data, series);
 	const resolvedXDomain =
 		explicitXDomain ??
-		(x
+		(xValues.length > 0
 			? isContinuousDomain(xValues)
-				? continuousDomain(data, x)
-				: categoryDomain(data, x)
+				? continuousDomain(
+						xValues.map((value) => ({ value })),
+						"value",
+					)
+				: categoryDomain(
+						xValues.map((value) => ({ value })),
+						"value",
+					)
 			: undefined);
 	const resolvedYDomain =
-		explicitYDomain ?? (y ? numberDomain(data, y, { includeZero }) : undefined);
+		explicitYDomain ??
+		(yValues.length > 0
+			? numberDomain(
+					yValues.map((value) => ({ value })),
+					"value",
+					{ includeZero },
+				)
+			: undefined);
 	const hasContinuousXDomain =
 		resolvedXDomain?.length === 2 && isContinuousDomain(resolvedXDomain);
 	const xScale = resolvedXDomain
@@ -112,20 +156,22 @@ export function BrailleChart<TDatum extends ChartDatum>({
 		? numericTicks(resolvedYDomain, yTickCount, yTickPeriod)
 		: [];
 
+	const contextValue = {
+		columns: resolvedColumns,
+		data,
+		rows: resolvedRows,
+		series,
+		xDomain: resolvedXDomain,
+		xKey,
+		xScale,
+		xTicks,
+		yDomain: resolvedYDomain,
+		yScale,
+		yTicks,
+	} as ChartContextValue;
+
 	return (
-		<ChartProvider
-			value={{
-				columns: resolvedColumns,
-				data,
-				rows: resolvedRows,
-				xDomain: resolvedXDomain,
-				xScale,
-				xTicks,
-				yDomain: resolvedYDomain,
-				yScale,
-				yTicks,
-			}}
-		>
+		<ChartProvider value={contextValue}>
 			<div className={cn("braille-chart", className)} {...props}>
 				<div
 					className="braille-chart__plot"

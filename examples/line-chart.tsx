@@ -22,30 +22,24 @@ export function LineChartExample() {
 			data={revenue}
 			columns={48}
 			rows={10}
-			x="month"
+			xKey="month"
 			yDomain={[0, 56]}
+			series={[
+				{ id: "mrr", dataKey: "mrr", label: "MRR", color: "#0f766e" },
+				{
+					id: "target",
+					dataKey: "target",
+					label: "Target",
+					color: "#dc2626",
+				},
+			]}
 		>
 			<BrailleGrid />
-			<BrailleLine
-				color="#0f766e"
-				label="Monthly recurring revenue trend"
-				x="month"
-				y="mrr"
-			/>
-			<BrailleLine
-				color="#dc2626"
-				label="Monthly recurring revenue target trend"
-				x="month"
-				y="target"
-			/>
+			<BrailleLine series="mrr" />
+			<BrailleLine series="target" />
 			<BrailleAxis axis="x" label="Month" />
 			<BrailleAxis axis="y" label="MRR" />
-			<BrailleLegend
-				items={[
-					{ id: "mrr", color: "#0f766e", label: "MRR" },
-					{ id: "target", color: "#dc2626", label: "Target" },
-				]}
-			/>
+			<BrailleLegend />
 		</BrailleChart>
 	);
 }

@@ -1,47 +1,44 @@
 "use client";
 
+import type * as React from "react";
 import { gridToBraille } from "../core/braille";
 import { createGrid, drawPolyline } from "../core/raster";
 import type { ChartDatum } from "../core/types";
 import { cn } from "../lib/utils";
 import { useChartContext } from "./chart-context";
-import { type BasePlotProps, resolvePoints } from "./plot-utils";
+import { resolveSeries, resolveSeriesPoints } from "./plot-utils";
 
-export type BrailleLineProps<TDatum extends ChartDatum> = BasePlotProps<TDatum>;
+export type BrailleLineProps = React.HTMLAttributes<HTMLPreElement> & {
+	series: string;
+	color?: string;
+	label?: string;
+};
 
-export function BrailleLine<TDatum extends ChartDatum>({
-	data,
-	x,
-	y,
+export function BrailleLine({
+	series: seriesId,
 	color,
-	includeZero = false,
 	label,
 	className,
 	style,
 	...props
-}: BrailleLineProps<TDatum>) {
-	const context = useChartContext<TDatum>();
-	const chartData = data ?? context.data;
+}: BrailleLineProps) {
+	const context = useChartContext<ChartDatum>();
+	const series = resolveSeries(context, seriesId);
 	const grid = createGrid(context.columns, context.rows);
-	const { points } = resolvePoints({
-		columns: context.columns,
-		data: chartData,
-		includeZero,
-		rows: context.rows,
-		x,
-		xDomain: context.xDomain,
-		y,
-		yDomain: context.yDomain,
-	});
+	const { points } = resolveSeriesPoints(context, seriesId);
 
 	drawPolyline(grid, points);
 
 	return (
 		<pre
-			aria-label={label}
+			aria-label={
+				label ??
+				series.ariaLabel ??
+				(typeof series.label === "string" ? series.label : series.id)
+			}
 			className={cn("braille-chart__layer", className)}
 			role="img"
-			style={{ color, ...style }}
+			style={{ color: color ?? series.color, ...style }}
 			{...props}
 		>
 			{gridToBraille(grid)}
