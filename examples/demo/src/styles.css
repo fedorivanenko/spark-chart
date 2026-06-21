@@ -92,13 +92,14 @@ h2 {
 .demo-card .braille-chart {
 	--braille-chart-foreground: 207 82% 66%;
 	--braille-chart-muted: 218 11% 65%;
-	--braille-chart-grid: 220 9% 42%;
-	--braille-chart-border: 220 9% 32%;
 }
 
 .braille-chart__plot {
 	border: 1px solid #3e4451;
 	border-radius: 0;
 	background: #282c34;
-	padding: 16px;
+}
+
+.braille-chart:has(.braille-chart__ruler) .braille-chart__plot {
+	padding: 1lh 12ch 4lh;
 }

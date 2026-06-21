@@ -1,38 +1,45 @@
 # Braille Charts
 
-Small shadcn-style React chart primitives rendered with braille text glyphs.
+Small React primitives rendered with braille text glyphs.
 
 ```tsx
 import {
-	BrailleAxis,
 	BrailleChart,
-	BrailleGrid,
+	BrailleFunction,
 	BrailleLegend,
-	BrailleLine,
+	BraillePolygon,
+	BrailleRuler,
 } from "braille-charts";
 import "braille-charts/styles.css";
-
-const data = [
-	{ month: "Jan", revenue: 20 },
-	{ month: "Feb", revenue: 42 },
-	{ month: "Mar", revenue: 35 },
-];
 
 export function Example() {
 	return (
 		<BrailleChart
-			data={data}
-			resolution={{ columns: 40, rows: 8 }}
-			xKey="month"
-			yTickPeriod={10}
-			series={[
-				{ id: "revenue", dataKey: "revenue", label: "Revenue" },
-			]}
+			resolution={{ columns: 80, rows: 40 }}
+			viewport={{ x: [-Math.PI * 2, Math.PI * 2], y: [-1.2, 1.2] }}
 		>
-			<BrailleGrid />
-			<BrailleLine series="revenue" />
-			<BrailleAxis axis="x" label="Month" />
-			<BrailleLegend />
+			<BraillePolygon
+				color="#a855f7"
+				data={[
+					{ x: -Math.PI, y: -0.8 },
+					{ x: -Math.PI / 2, y: 0.9 },
+					{ x: Math.PI / 2, y: 0.15 },
+					{ x: Math.PI, y: -0.7 },
+				]}
+			/>
+			<BrailleFunction
+				color="#6366f1"
+				label="Sine wave"
+				y={(x) => Math.sin(x)}
+			/>
+			<BrailleRuler axis="x" edge="bottom" every={10} label="X" />
+			<BrailleRuler axis="y" edge="left" every={1} label="Y" />
+			<BrailleLegend
+				items={[
+					{ id: "polygon", color: "#a855f7", label: "polygon" },
+					{ id: "sin", color: "#6366f1", label: "sin(x)" },
+				]}
+			/>
 		</BrailleChart>
 	);
 }
@@ -40,27 +47,33 @@ export function Example() {
 
 ## API model
 
-- `data`: raw rows.
-- `xKey`: shared x accessor for all series.
-- `series`: registry of y accessors and display metadata.
-- Plot layers (`BrailleLine`, `BrailleBar`, `BrailleScatter`) render by `series` id.
-- `BrailleChart` owns domains, scales, ticks, and legend metadata.
+- `BrailleChart`: coordinate system and raster frame. Can render JSX children or a shared terminal `layers` scene.
+- `BrailleFunction`: samples a continuous function into braille glyphs.
+- `BraillePolygon`: renders arbitrary polygon geometry from data plus optional `x`/`y` accessors.
+- `BrailleRuler`: scale labels pinned to an edge; continuous domains use canvas spacing, categorical domains use category spacing.
+- `BrailleLegend`: non-spatial series labels.
 
-## Component intent
+Spatial marks render into the chart raster. App/domain data can be translated explicitly before passing to marks.
 
-- `BrailleChart`: owns data, series registry, grid size, shared frame.
-- `BrailleFunction`: samples a continuous function in world space, then rasterizes it.
-- `BrailleLine`: shows trend/continuity.
-- `BrailleBar`: shows magnitude comparison.
-- `BrailleScatter`: shows individual points/correlation.
-- `BrailleGrid`: adds reference lines for easier spatial reading.
-- `BrailleAxis`: explains scale.
-- `BrailleLegend`: explains series identity.
-- `BrailleTooltip`: placeholder for precision recovery.
+Terminal-first scene API:
+
+```ts
+import { functionLayer, polygonLayer, renderBrailleChart, rulerLayer } from "braille-charts";
+
+const text = renderBrailleChart({
+	resolution: { columns: 80, rows: 40 },
+	viewport: { x: [-Math.PI * 2, Math.PI * 2], y: [-1.2, 1.2] },
+	layers: [
+		polygonLayer({ data: points, zIndex: 0 }),
+		functionLayer({ y: Math.sin, zIndex: 1 }),
+		rulerLayer({ axis: "x", edge: "bottom", every: 10, label: "X" }),
+	],
+});
+```
 
 ## Examples
 
-See `examples/function-chart.tsx`.
+See `examples/function-chart.tsx` and `examples/categorical-chart.tsx`.
 
 Run demo app:
 

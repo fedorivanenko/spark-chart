@@ -102,3 +102,48 @@ export function drawVerticalBar(
 		}
 	}
 }
+
+export function drawPolygon(grid: BrailleGrid, points: PlotPoint[]): void {
+	if (points.length < 2) {
+		return;
+	}
+
+	drawPolyline(grid, [...points, points[0]]);
+}
+
+export function fillPolygon(grid: BrailleGrid, points: PlotPoint[]): void {
+	if (points.length < 3) {
+		return;
+	}
+
+	const height = grid.length;
+
+	for (let y = 0; y < height; y += 1) {
+		const intersections: number[] = [];
+
+		for (let index = 0; index < points.length; index += 1) {
+			const start = points[index];
+			const end = points[(index + 1) % points.length];
+			const minY = Math.min(start.y, end.y);
+			const maxY = Math.max(start.y, end.y);
+
+			if (y < minY || y >= maxY || start.y === end.y) {
+				continue;
+			}
+
+			const ratio = (y - start.y) / (end.y - start.y);
+			intersections.push(start.x + ratio * (end.x - start.x));
+		}
+
+		intersections.sort((a, b) => a - b);
+
+		for (let index = 0; index < intersections.length - 1; index += 2) {
+			const startX = Math.ceil(intersections[index]);
+			const endX = Math.floor(intersections[index + 1]);
+
+			for (let x = startX; x <= endX; x += 1) {
+				setDot(grid, x, y);
+			}
+		}
+	}
+}

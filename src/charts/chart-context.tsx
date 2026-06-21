@@ -1,35 +1,15 @@
 "use client";
 
 import * as React from "react";
-import type { Scale } from "../core/scale";
-import type { ChartTick } from "../core/ticks";
-import type {
-	BrailleSeriesConfig,
-	ChartDatum,
-	ContinuousDomain,
-	DataKey,
-	DomainValue,
-} from "../core/types";
+import type { TerminalChartFrame } from "../core/render";
 
-export type ChartContextValue<TDatum extends ChartDatum = ChartDatum> = {
-	data: TDatum[];
-	series: BrailleSeriesConfig<TDatum>[];
-	columns: number;
-	rows: number;
-	xKey?: DataKey<TDatum, DomainValue>;
-	xDomain?: DomainValue[] | ContinuousDomain;
-	yDomain?: ContinuousDomain;
-	xScale?: Scale;
-	yScale?: Scale<number>;
-	xTicks: ChartTick[];
-	yTicks: ChartTick[];
-};
+export type ChartContextValue = TerminalChartFrame;
 
 const ChartContext = React.createContext<ChartContextValue | null>(null);
 
 export const ChartProvider = ChartContext.Provider;
 
-export function useChartContext<TDatum extends ChartDatum>() {
+export function useChartContext() {
 	const context = React.useContext(ChartContext);
 
 	if (!context) {
@@ -38,5 +18,5 @@ export function useChartContext<TDatum extends ChartDatum>() {
 		);
 	}
 
-	return context as ChartContextValue<TDatum>;
+	return context;
 }

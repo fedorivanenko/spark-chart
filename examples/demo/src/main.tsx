@@ -1,9 +1,9 @@
 import {
-	BrailleAxis,
 	BrailleChart,
 	BrailleFunction,
-	BrailleGrid,
 	BrailleLegend,
+	BraillePolygon,
+	BrailleRuler,
 } from "braille-charts";
 import type { PropsWithChildren } from "react";
 import { useState } from "react";
@@ -107,21 +107,57 @@ function App() {
 			<div className="demo-grid">
 				<DemoCard title="Function: screen-sampled continuity">
 					<BrailleChart
-						resolution={{ columns: 56, rows: 12 }}
+						resolution={{ columns: 80, rows: 40 }}
 						viewport={{ x: functionXDomain, y: functionYDomain }}
-						xTickPeriod={Math.PI}
-						yTickPeriod={0.5}
 					>
-						<BrailleGrid />
+						<BraillePolygon
+							color="#c678dd"
+							data={[
+								{ x: -Math.PI, y: -0.8 },
+								{ x: -Math.PI / 2, y: 0.9 },
+								{ x: Math.PI / 2, y: 0.15 },
+								{ x: Math.PI, y: -0.7 },
+							]}
+							label="Sample polygon"
+						/>
 						<BrailleFunction
 							color="#61afef"
 							label="Sine wave"
 							y={(x) => Math.sin(x)}
 						/>
-						<BrailleAxis axis="x" label="x" />
-						<BrailleAxis axis="y" label="sin(x)" />
+						<BrailleRuler axis="x" edge="bottom" every={10} label="X" />
+						<BrailleRuler axis="y" edge="left" every={1} label="Y" />
 						<BrailleLegend
-							items={[{ id: "sin", color: "#61afef", label: "sin(x)" }]}
+							items={[
+								{ id: "polygon", color: "#c678dd", label: "polygon" },
+								{ id: "sin", color: "#61afef", label: "sin(x)" },
+							]}
+						/>
+					</BrailleChart>
+				</DemoCard>
+
+				<DemoCard title="Categorical: sticky rulers">
+					<BrailleChart
+						resolution={{ columns: 80, rows: 40 }}
+						xDomain={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+						yDomain={[0, 100]}
+					>
+						<BraillePolygon
+							color="#c678dd"
+							data={[
+								{ x: "Jan", y: 12 },
+								{ x: "Feb", y: 72 },
+								{ x: "Mar", y: 48 },
+								{ x: "Apr", y: 86 },
+								{ x: "May", y: 36 },
+								{ x: "Jun", y: 18 },
+							]}
+							label="Categorical polygon"
+						/>
+						<BrailleRuler axis="x" edge="bottom" every={1} />
+						<BrailleRuler axis="y" edge="left" every={4} />
+						<BrailleLegend
+							items={[{ id: "shape", color: "#c678dd", label: "categorical" }]}
 						/>
 					</BrailleChart>
 				</DemoCard>

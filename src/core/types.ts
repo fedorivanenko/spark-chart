@@ -1,5 +1,3 @@
-import type * as React from "react";
-
 export type ChartDatum = Record<string, unknown>;
 
 export type DataKey<TDatum, TValue = unknown> =
@@ -26,15 +24,4 @@ export type BrailleGrid = boolean[][];
 export type BrailleResolution = {
 	columns: number;
 	rows: number;
-};
-
-export type BrailleSeriesConfig<TDatum extends ChartDatum> = {
-	id: string;
-	dataKey: NumberAccessor<TDatum>;
-	xKey?: DataKey<TDatum, DomainValue>;
-	data?: TDatum[];
-	label?: React.ReactNode;
-	ariaLabel?: string;
-	color?: string;
-	marker?: React.ReactNode;
 };

@@ -1,15 +1,11 @@
 :root {
 	--braille-chart-foreground: 0 0% 9%;
 	--braille-chart-muted: 0 0% 45.1%;
-	--braille-chart-border: 0 0% 89.8%;
-	--braille-chart-grid: 0 0% 72%;
 }
 
 .dark {
 	--braille-chart-foreground: 0 0% 98%;
 	--braille-chart-muted: 0 0% 63.9%;
-	--braille-chart-border: 0 0% 14.9%;
-	--braille-chart-grid: 0 0% 32%;
 }
 
 .braille-chart {
@@ -26,8 +22,12 @@
 	display: grid;
 	width: max-content;
 	max-width: 100%;
-	overflow: auto;
-	padding: 1.25lh 10ch 3lh 8ch;
+	overflow: visible;
+	padding: 0;
+}
+
+.braille-chart:has(.braille-chart__ruler) .braille-chart__plot {
+	padding: 1lh 12ch 4lh;
 }
 
 .braille-chart__layer {
@@ -40,41 +40,8 @@
 	background: transparent;
 }
 
-.braille-chart__grid {
-	opacity: 0.7;
-}
-
-.braille-chart__axis {
-	position: relative;
-	z-index: 2;
-	grid-area: 1 / 1;
-	color: hsl(var(--braille-chart-muted));
-	font: inherit;
-	line-height: 1;
-	pointer-events: none;
-}
-
-.braille-chart__axis-label,
-.braille-chart__tick-label {
-	position: absolute;
-	font-weight: 600;
-	white-space: nowrap;
-}
-
-.braille-chart__axis--y .braille-chart__tick-label {
-	width: 7ch;
-	text-align: right;
-}
-
-.braille-chart__axis--x .braille-chart__tick-label {
-	transform: translateX(-50%);
-}
-
-.braille-chart__axis--y .braille-chart__tick-label {
-	transform: translateY(-50%);
-}
-
 .braille-chart__legend {
+	grid-area: 2 / 1;
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.75rem;
@@ -93,10 +60,4 @@
 
 .braille-chart__legend-marker {
 	color: hsl(var(--braille-chart-foreground));
-}
-
-.braille-chart__tooltip {
-	border: 1px solid hsl(var(--braille-chart-border));
-	padding: 0.5rem;
-	font-size: 0.75rem;
 }
