@@ -8,13 +8,19 @@
 	--braille-chart-muted: 0 0% 63.9%;
 }
 
-.braille-chart {
+.braille-chart,
+.braille-chart-responsive {
 	color: hsl(var(--braille-chart-foreground));
 	font-family:
 		"DejaVu Sans Mono", "Noto Sans Mono", SFMono-Regular, Menlo, Monaco,
 		Consolas, ui-monospace, monospace;
 	font-variant-numeric: tabular-nums;
 	line-height: 1;
+}
+
+.braille-chart-responsive {
+	min-width: 0;
+	width: 100%;
 }
 
 .braille-chart__plot {

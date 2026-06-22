@@ -1,4 +1,9 @@
-export { BrailleChart, type BrailleChartProps } from "./charts/braille-chart";
+export {
+	BrailleChart,
+	ResponsiveBrailleChart,
+	type BrailleChartProps,
+	type ResponsiveBrailleChartProps,
+} from "./charts/braille-chart";
 export {
 	BrailleFunction,
 	type BrailleFunctionProps,
@@ -18,6 +23,11 @@ export {
 	type BrailleRulerProps,
 } from "./charts/braille-ruler";
 export type {
+	UseBrailleResolutionOptions,
+	UseBrailleResolutionResult,
+} from "./charts/use-braille-resolution";
+export { useBrailleResolution } from "./charts/use-braille-resolution";
+export type {
 	RenderBrailleChartOptions,
 	TerminalChartFrame,
 	TerminalChartLayer,
@@ -36,6 +46,15 @@ export {
 	renderRulerLayer,
 	rulerLayer,
 } from "./core/render";
+export type {
+	GetTerminalResolutionOptions,
+	RenderTerminalBrailleChartOptions,
+	TerminalSizeLike,
+} from "./core/terminal";
+export {
+	getTerminalResolution,
+	renderTerminalBrailleChart,
+} from "./core/terminal";
 export type { WorldFunction, WorldPoint, WorldPolyline } from "./core/shapes";
 export type {
 	Accessor,
